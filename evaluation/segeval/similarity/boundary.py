@@ -39,9 +39,14 @@ def __boundary_similarity_2__(*args, **kwargs):
     metric_kwargs = dict(kwargs)
     del metric_kwargs['return_parts']
     del metric_kwargs['one_minus']
+
     # Arguments
     return_parts = kwargs['return_parts']
     one_minus = kwargs['one_minus']
+    return_statistics = kwargs.get('return_statistics', False)
+    if 'return_statistics' in metric_kwargs:
+        del metric_kwargs['return_statistics']
+
     # Compute
     statistics = __boundary_statistics__(*args, **metric_kwargs)
     additions = statistics['additions']
@@ -57,8 +62,10 @@ def __boundary_similarity_2__(*args, **kwargs):
         return numerator, int(denominator), additions, substitutions, transpositions
     else:
         value = numerator / denominator if denominator > 0 else 1
-        if one_minus:
-            return Decimal('1') - value
+
+        value = Decimal('1') - value if one_minus else value
+        if return_statistics:
+            return value, statistics
         else:
             return value
 
