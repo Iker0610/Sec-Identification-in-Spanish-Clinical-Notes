@@ -9,7 +9,6 @@ This lack of structure complicates building automatic systems and their evaluati
 The aim of the present work is to provide the scientific community with a Spanish open source dataset to build and evaluate automatic section identification systems. 
 Together with this dataset, we make available a suitable evaluation measure.
 
-
 --------------------------------------
 
 ## Sec-CodiEsp
@@ -33,10 +32,12 @@ This notes are annotated with seven major sections, presenting an annotations ta
 
 ### Dataset
 
-> **Full dataset will be made available later on.**
->> _Check the **IberLEF 2023 [ClinAIS][ClinAIS webpage]** task._
+> **Full dataset will be made available later on.** \
+> _Check the **IberLEF 2023 [ClinAIS](https://ixa2.si.ehu.eus/clinais)** task._
 
-[ClinAIS webpage]: https://ixa2.si.ehu.eus/clinais/
+We provided a sample of 6 notes from the train split that are included in the ``/datasets/samples`` folder.
+
+For the same sample we provide the gold standard (``gold.sample.json``), a hypothetical prediction (``prediction.sample.json``) and this prediction evaluated (``prediction.sample.evaluated.json``) using the provided evaluation script (``/evaluation/evaluate.py``).
 
 --------------------------------------
 
