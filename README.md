@@ -2,19 +2,19 @@
 
 # Section Identification in Spanish Clinical Notes
 
-Electronic Clinical Narratives (ECNs) store valuable individual's health information. 
-However, there are few available open source data. Besides, ECNs can be structurally  heterogeneous, ranging from documents with  explicit section headings or titles to unstructured notes.
+Electronic Clinical Narratives (ECNs) store valuable individual health information. 
+However, there are few available open-source data. Besides, ECNs can be structurally  heterogeneous, ranging from documents with  explicit section headings or titles to unstructured notes.
 This lack of structure complicates building automatic systems and their evaluation.
 
-The aim of the present work is to provide the scientific community with a Spanish open source dataset to build and evaluate automatic section identification systems. 
+The present work aims to provide the scientific community with a Spanish open-source dataset to build and evaluate automatic section identification systems. 
 Together with this dataset, we make available a suitable evaluation measure.
 
 --------------------------------------
 
 ## Sec-CodiEsp
 
-The Sec-CodiEsp corpus is a randomly-selected subset of the background set of the CodiEsp corpus [1], consisting of 1,038 non-structured clinical records  from different medical specialties written in Spanish.
-This notes are annotated with seven major sections, presenting an annotations task consisting of delimiting section boundaries and their category.
+The Sec-CodiEsp corpus is a randomly selected subset of the background set of the CodiEsp corpus [1], consisting of 1,038 non-structured clinical records  from different medical specialties written in Spanish.
+These notes are annotated with seven major sections, presenting an annotations task consisting of delimiting section boundaries and their category.
 
 
 ### Annotated Sections
@@ -32,26 +32,27 @@ This notes are annotated with seven major sections, presenting an annotations ta
 
 ### Dataset
 
-> **Full dataset will be made available later on.** \
-> _Check the **IberLEF 2023 [ClinAIS](https://ixa2.si.ehu.eus/clinais)** task._
+> **The full dataset is available on CodaLab.** \
+> _Check the **[IberLEF 2023 ClinAIS competition](https://codalab.lisn.upsaclay.fr/competitions/10751)** ._\
+> _Also check the [Shared Task website](https://ixa2.si.ehu.eus/clinais/home)._
 
-We provided a sample of 6 notes from the train split that are included in the ``/datasets/samples`` folder.
+We provided a sample of 6 notes from the train split that is included in the ``/datasets/samples`` folder.
 
-For the same sample we provide the gold standard (``gold.sample.json``), a hypothetical prediction (``prediction.sample.json``) and this prediction evaluated (``prediction.sample.evaluated.json``) using the provided evaluation script (``/evaluation/evaluate.py``).
+For the same sample, we provide the gold standard (``gold.sample.json``), a hypothetical prediction (``prediction.sample.json``), and this prediction evaluated (``prediction.sample.evaluated.json``) using the provided evaluation script (``/evaluation/evaluate.py``).
 
 --------------------------------------
 
 ## B2 Evaluation metric for Sec-CodiEsp Task
 
 Existing segmentation metrics account for a variety of segmentation granularities required by this task. 
-Several segmentation evaluation metrics have been proposed, WindowDiff (WD) [2], S [3] and B [4]. 
+Several segmentation evaluation metrics have been proposed, WindowDiff (WD) [2], S [3], and B [4]. 
 
 WD only measures segment boundaries and ignores segment types and therefore it was not adequate. 
-S and B, both employ a variation of the editing distance with three operations (addition/deletion, substitution, and transposition), and are also well-suited to distinguish segment types. Finally we selected B as S produces excessively optimistic values due to its normalization [4]. 
+S and B, both employ a variation of the editing distance with three operations (addition/deletion, substitution, and transposition) and are also well-suited to distinguish segment types. Finally, we selected B as S produces excessively optimistic values due to its normalization [4]. 
 
 * **Additions/deletions (A or D)** for full misses. _Addition_, when the prediction missed a section and adding it the gold is matched. _Deletion_ when the system predicts a non-existing section and deleting it matches the gold standard.
 * **Substitutions (S)** when a boundary type is confused with another.
-* **n-wise transpositions (T)** for near misses. Cases where a section type is well identified but the predicted boundary is displaced $n$ words.
+* **n-wise transpositions (T)** for near misses. These are cases where a section type is well identified but the predicted boundary is displaced by $n$ words.
 
 The main advantage of S and B metrics is the definition of the transpose operation, in which the boundary between 2 sections can be moved by a limited and configurable number of borders, instead of performing an insert and a delete operation. Furthermore, these metrics' operations can be weighted separately allowing further adjustment based on the specific requirements for the task. 
 
@@ -64,13 +65,13 @@ The main advantage of S and B metrics is the definition of the transpose operati
 </p>
 
 * **Additions and Deletions** generally represent discrepancies regarding whether a fragment belongs to a different section or to an existing contiguous one. This error is common given the characteristics of the documents. \
-When there are exactly two additions it typically indicates the insertion of a section in the middle of another one. Under the standpoint of section identification, it should be considered as a single error, though for the algorithm it is counted as two errors: the insertion of the start of the new section and the continuation of the previous existing one. There are less frequent situations where this may not be the case, for instance if the new section spreads until the previous section's end, not being necessary the extra addition to continue the previous section. Consequently, and considering the limitations of the first version of B, it was decided to apply the next weighting:
+When there are exactly two additions it typically indicates the insertion of a section in the middle of another one. From the standpoint of section identification, it should be considered as a single error. However, for the algorithm, it is counted as two errors: the insertion of the start of the new section and the continuation of the previous existing one. There are less frequent situations where this may not be the case, for instance, if the new section spreads until the last section's end, not being necessary the extra addition to continue the previous section. Consequently, and considering the limitations of the first version of B, it was decided to apply the next weighting:
 
 <p align="center">
 <img src="https://latex.codecogs.com/svg.image?w_A(n\_additions)%20=%20\begin{cases}%20%20%20%20%20%20%20%200%20&%20\text{if%20}%20n\_boundaries%20=%200%20\\%20%20%20%20%20%20%20%200.75%20+%20\frac{\tanh{(n\_additions%20-%201.5)%20-%202}}{4}%20&%20\text{otherwise}%20%20%20%20%20%20%20%20%20%20%20%20\end{cases}%20%20%20%20\label{eq:weight_additions}">
 </p>
 
-* **Transpositions** are minor divergences in the length of a section. Transpositions range from one or two words to complete sentences, therefore the upper limit of borders a boundary can be moved was set to $n_t=40$. This is a fairly high limit that can cover an entire paragraph, although transpositions with different displacement length do not symbolize the same error. This fact led us to weight each individual transposition based on the number of borders moved. 
+* **Transpositions** are minor divergences in the length of a section. Transpositions range from one or two words to complete sentences, therefore the upper limit of borders a boundary can be moved was set to $n_t=40$. This is a fairly high limit that can cover an entire paragraph, although transpositions with different displacement length do not symbolize the same error. This fact led us to weigh each transposition based on the number of borders moved. 
 The maximum value that a weighted transposition can reach is $\sim0.68$ when the boundary is moved the maximum number of borders allowed, and approaches $0$ as the displacement is smaller.
 
 <p align="center">
@@ -79,7 +80,7 @@ The maximum value that a weighted transposition can reach is $\sim0.68$ when the
 
 
 The next equation is used to calculate **B**, i.e., one minus the incorrectness between the 2 annotations.  
-$s_1$ and $s_2$ are lists of the same size, the number of instance borders, containing in each border's position a set with a section boundary if any.
+$s_1$ and $s_2$ are lists of the same size, the number of instances borders, containing in each border's position a set with a section boundary if any.
 
 <p align="center">
 <img src="https://latex.codecogs.com/svg.image?w_T(T_e,%20n_t)%20=%20\sum_{j=1}^{|T_e|}%20w_t(|\%20T_e[j][1]%20-%20T_e[j][2]\%20|,%20n_t)\\B(s_1,%20s_1,%20n_t)%20=%201%20-%20\frac{w_A(|A_e|)%20+%20w_T(T_e,%20n_t)%20+%20w_S(|S_e|)}{|A_e|%20+%20|T_e|%20+%20|S_e|%20+%20|B_M|}">
@@ -87,7 +88,7 @@ $s_1$ and $s_2$ are lists of the same size, the number of instance borders, cont
 
 $B_M$,  $A_e$, $S_e$ and $T_e$ are calculated using $s_1$ and $s_2$, where $B_M$ is the set of matching boundary pairs, $A_e$ and $S_e$ are the sets of additions/deletions and substitutions respectively, and $T_e$ is the list of transpositions. Each transposition is a list containing among others the index of the border where the section boundary was in position 1, and in position 2 the index of the border to which the section boundary has been moved.
 
-B metric's equation does only consider matching boundaries pairs, $B_M$, as correct section divisions, counting transpositions as an error. In the context of this task, transpositions should be taken into account towards the correctness calculation, therefore we defined the metric **B2**  based on B that considers transpositions near correct annotations. B2 uses each transposition's weight's complement to adjust how much it contributes to the correctness calculation so that small transpositions count more than bigger ones. 
+B metric's equation only considers matching boundary pairs, $B_M$, as correct section divisions, counting transpositions as an error. In the context of this task, transpositions should be taken into account towards the correctness calculation, therefore we defined the metric **B2**  based on B that considers transpositions near correct annotations. B2 uses each transposition's weight's complement to adjust how much it contributes to the correctness calculation so that small transpositions count more than bigger ones. 
 
 <p align="center">
 <img src="https://latex.codecogs.com/svg.image?%20%20%20%20B2(s_1,%20s_1,%20n_t)%20=%201%20-%20\frac{w_A(|A_e|)%20+%20w_T(T_e,%20n_t)%20+%20w_S(|S_e|)}{|A_e|%20+%20|T_e|%20+%20|S_e|%20+%20|B_M|%20+%20(|T_e|%20-%20w_T(T_e,%20n_t))}">
@@ -106,14 +107,50 @@ https://aclanthology.org/J02-1002.
 [3] **C. Fournier, D. Inkpen**, *Segmentation similarity and agreement*,  in: Human Language Technologies: Conference of the North American Chapter of the Association of Computational Linguistics, Proceedings, June 3-8, 2012, Montréal, Canada, The Association for Computational Linguistics, 2012, pp. 152–161.
 https://aclanthology.org/N12-1016.
 
-[4] **C. Fournier**, *Evaluating Text Segmentation using Boundary Edit Distance*, in: Proceedings of the 51st Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers), Association for Computational Linguistics, Sofia, Bulgaria, 2013, pp. 1702–1712
+[4] **C. Fournier**, *Evaluating Text Segmentation using Boundary Edit Distance*, in Proceedings of the 51st Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers), Association for Computational Linguistics, Sofia, Bulgaria, 2013, pp. 1702–1712
 https://aclanthology.org/P13-1167.
 
 
 ## Citation
 
-> **To be announced**
+If you use our **ClinAIS dataset or evaluation metric**, please cite the following paper:
 
+```
+@article{delaiglesia2023104461,
+  title = {{A}n {O}pen {S}ource {C}orpus and {A}utomatic {T}ool for {S}ection {I}dentification in {S}panish {H}ealth {R}ecords},
+  journal = {Journal of Biomedical Informatics},
+  volume = {145},
+  pages = {104461},
+  year = {2023},
+  issn = {1532-0464},
+  doi = {https://doi.org/10.1016/j.jbi.2023.104461},
+  url = {https://www.sciencedirect.com/science/article/pii/S153204642300182X},
+  author= {Iker {De la Iglesia} and
+      Maria Viv{\'{o}} and
+      Paula Chocr{\'{o}}n and
+      Gabriel de Maeztu and
+      Koldo Gojenola and
+      Aitziber Atutxa}
+}
+```
+
+If you use the **ClinAIS dataset** or for citing the **ClinAIS Shared Task Overview**, please also use this reference:
+
+```
+@article{delaiglesia2023overview,
+  title={{Overview of ClinAIS at IberLEF 2023: Automatic Identification of Sections in Clinical Documents in Spanish}},
+  author= {Iker {De la Iglesia} and
+      Maria Viv{\'{o}} and
+      Paula Chocr{\'{o}}n and
+      Gabriel de Maeztu and
+      Koldo Gojenola and
+      Aitziber Atutxa},
+  journal={Procesamiento del Lenguaje Natural},
+  volume={71},
+  pages={289--299},
+  year={2023}
+}
+```
 
 
 ## Licenses
