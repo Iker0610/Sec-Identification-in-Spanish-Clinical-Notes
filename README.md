@@ -174,6 +174,10 @@ The provided code is an adaptation of the [SegEval](https://github.com/cfournie/
 ## Acknowledgments 
 
 This work has been partially supported by the HiTZ Center and the Basque Government, Spain (Research group funding IT1570-22) as well as by the Spanish Ministry of Universities, Science and Innovation MCIN/AEI/10.13039/501100011033 by means of the projects:
+- DOTT-HEALTH/PAT-MED PID2019-543106942RB-C31
 - EDHER-MED/EDHIA PID2022-136522OB-C22
+- EU NextGeneration EU/PRTR projects:
+  - ANTIDOTE PCI2020-120717-2 EU ERA-Net CHIST-ERA
+  - DeepR3 TED2021-130295B-C31
 
 ---
